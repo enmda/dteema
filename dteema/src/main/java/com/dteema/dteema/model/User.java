@@ -1,140 +1,125 @@
-package com.elvin.chatapp.entity;
+package com.dteema.dteema.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
-@Table(name = "users", uniqueConstraints = {
-    @UniqueConstraint(columnNames = "username"),
-    @UniqueConstraint(columnNames = "email")
-})
-@Data
-@Builder
+@Table(name = "users")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class User implements UserDetails {
-    
+
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
-    
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Column(nullable = false, unique = true, length = 50)
     private String username;
-    
+
     @Column(nullable = false, unique = true, length = 100)
     private String email;
-    
+
     @Column(nullable = false)
-    private String password;  
-    
-    @Column(nullable = false, length = 100)
-    private String fullName;
-    
+    private String password;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Role role;
-    
-    @Column(nullable = false)
-    private Boolean enabled = true;
-    
-    @Column(nullable = false)
-    private Boolean accountNonExpired = true;
-    
-    @Column(nullable = false)
-    private Boolean accountNonLocked = true;
-    
-    @Column(nullable = false)
-    private Boolean credentialsNonExpired = true;
-    
-    @Column(nullable = false, updatable = false)
+    @Column(name = "role")
+    @Builder.Default
+    private Set<Role> roles = new HashSet<>();
+
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
-    
-    @Column(nullable = false)
+
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
-    
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private Set<RoomMember> roomMemberships = new HashSet<>();
+
     @PrePersist
     protected void onCreate() {
-        LocalDateTime now = LocalDateTime.now();
-        createdAt = now;
-        updatedAt = now;
-        if (enabled == null) enabled = true;
-        if (accountNonExpired == null) accountNonExpired = true;
-        if (accountNonLocked == null) accountNonLocked = true;
-        if (credentialsNonExpired == null) credentialsNonExpired = true;
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+        if (roles.isEmpty()) {
+            roles.add(Role.ROLE_USER);
+        }
     }
-    
+
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
-    
-    // ========== UserDetails Implementation ==========
-    // These methods are required by Spring Security
-    
-    /**
-     * Returns the authorities (roles/permissions) granted to the user.
-     * We convert the Role enum to a GrantedAuthority.
-     */
+
+    // UserDetails implementation
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority(role.name()))
+                .collect(Collectors.toList());
     }
-    
-    /**
-     * Returns the password used to authenticate the user.
-     */
+
     @Override
     public String getPassword() {
         return password;
     }
-    
-    /**
-     * Returns the username used to authenticate the user.
-     */
+
     @Override
     public String getUsername() {
         return username;
     }
-    
-    /**
-     * Indicates whether the user's account has expired.
-     */
+
     @Override
     public boolean isAccountNonExpired() {
-        return accountNonExpired;
+        return true;
     }
-    
-    /**
-     * Indicates whether the user is locked or unlocked.
-     */
+
     @Override
     public boolean isAccountNonLocked() {
-        return accountNonLocked;
+        return true;
     }
-    
-    /**
-     * Indicates whether the user's credentials (password) has expired.
-     */
+
     @Override
     public boolean isCredentialsNonExpired() {
-        return credentialsNonExpired;
+        return true;
     }
-    
-    /**
-     * Indicates whether the user is enabled or disabled.
-     */
+
     @Override
     public boolean isEnabled() {
-        return enabled;
+        return true;
+    }
+
+    // Helper methods
+    public boolean hasRole(Role role) {
+        return roles.contains(role);
+    }
+
+    public boolean isSystemAdmin() {
+        return roles.contains(Role.ROLE_ADMIN);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
