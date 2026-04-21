@@ -1,0 +1,55 @@
+spring:
+  application:
+    name: chat-backend
+  
+  # Database Configuration
+  datasource:
+    url: jdbc:postgresql://localhost:5432/chatdb
+    username: chatuser
+    password: chatpass
+    driver-class-name: org.postgresql.Driver
+  
+  # JPA Configuration
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+  
+  # Liquibase Configuration ✅
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    enabled: true
+    drop-first: true  # Set to true ONLY in dev if you want fresh DB on each start
+    default-schema: public
+  
+  # Kafka Configuration
+#   kafka:
+#     bootstrap-servers: localhost:9092
+#     consumer:
+#       group-id: chat-group
+#       auto-offset-reset: earliest
+#       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+#       properties:
+#         spring.json.trusted.packages: '*'
+#     producer:
+#       key-serializer: org.apache.kafka.common.serialization.StringSerializer
+#       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+# Server Configuration
+server:
+  port: 8080
+
+# JWT Configuration
+jwt:
+  secret: your-256-bit-secret-key-change-this-in-production-please-make-it-long-enough
+  expiration: 86400000 # 24 hours in milliseconds
+
+# Kafka Topics
+# kafka:
+#   topic:
+#     chat-messages: chat-messages

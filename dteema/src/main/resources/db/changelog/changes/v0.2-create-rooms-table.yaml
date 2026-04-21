@@ -1,0 +1,124 @@
+databaseChangeLog:
+  - changeSet:
+      id: v0.2-1-create-rooms-table
+      author: elvin
+      changes:
+        - createTable:
+            tableName: rooms
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_rooms
+                    nullable: false
+
+              - column:
+                  name: name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: description
+                  type: VARCHAR(500)
+                  constraints:
+                    nullable: true
+
+              - column:
+                  name: created_by
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: is_private
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+      rollback:
+        - dropTable:
+            tableName: rooms
+
+  - changeSet:
+      id: v0.2-2-add-rooms-foreign-keys
+      author: elvin
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: rooms
+            baseColumnNames: created_by
+            constraintName: fk_rooms_created_by
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: CASCADE
+            onUpdate: CASCADE
+
+      rollback:
+        - dropForeignKeyConstraint:
+            baseTableName: rooms
+            constraintName: fk_rooms_created_by
+
+  - changeSet:
+      id: v0.2-3-create-rooms-indexes
+      author: elvin
+      changes:
+        - createIndex:
+            tableName: rooms
+            indexName: idx_rooms_name
+            columns:
+              - column:
+                  name: name
+
+        - createIndex:
+            tableName: rooms
+            indexName: idx_rooms_created_by
+            columns:
+              - column:
+                  name: created_by
+
+        - createIndex:
+            tableName: rooms
+            indexName: idx_rooms_created_at
+            columns:
+              - column:
+                  name: created_at
+                  descending: true
+
+        - createIndex:
+            tableName: rooms
+            indexName: idx_rooms_is_private
+            columns:
+              - column:
+                  name: is_private
+
+      rollback:
+        - dropIndex:
+            tableName: rooms
+            indexName: idx_rooms_name
+        - dropIndex:
+            tableName: rooms
+            indexName: idx_rooms_created_by
+        - dropIndex:
+            tableName: rooms
+            indexName: idx_rooms_created_at
+        - dropIndex:
+            tableName: rooms
+            indexName: idx_rooms_is_private
