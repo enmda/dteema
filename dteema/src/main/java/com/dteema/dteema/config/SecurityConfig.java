@@ -1,4 +1,8 @@
-package main.java.com.dteema.dteema.config;
+package com.dteema.dteema.config;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 @Configuration
 @EnableWebSecurity

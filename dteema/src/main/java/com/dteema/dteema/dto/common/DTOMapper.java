@@ -1,4 +1,4 @@
-package com.dteema.dteema.dto.mapper;
+package com.dteema.dteema.dto.common;
 
 import com.dteema.dteema.dto.message.MessageDTO;
 import com.dteema.dteema.dto.room.RoomDTO;

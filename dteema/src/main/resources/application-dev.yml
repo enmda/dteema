@@ -47,7 +47,10 @@ server:
 # JWT Configuration
 jwt:
   secret: your-256-bit-secret-key-change-this-in-production-please-make-it-long-enough
-  expiration: 86400000 # 24 hours in milliseconds
+  access:
+    expiration: 900000      # 15 minutes (15 * 60 * 1000)
+  refresh:
+    expiration: 2592000000  # 30 days (30 * 24 * 60 * 60 * 1000)
 
 # Kafka Topics
 # kafka:

@@ -7,3 +7,5 @@ databaseChangeLog:
       file: db/changelog/changes/v0.3-create-messages-table.yaml
   - include:
       file: db/changelog/changes/v0.4-create-room-members-table.yaml
+  - include:
+      file: db/changelog/changes/v0.5-create-refresh-tokens-table.yaml
