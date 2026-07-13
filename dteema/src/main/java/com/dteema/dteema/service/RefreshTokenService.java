@@ -31,7 +31,7 @@ public class RefreshTokenService {
 
 
     @Transactional
-    public RefreshToken createRefreshToken(Long userId, String deviceInfo, String ipAddress) {
+    public RefreshToken createRefreshToken(UUID userId, String deviceInfo, String ipAddress) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -61,7 +61,7 @@ public class RefreshTokenService {
 
 
     @Transactional
-    public int deleteByUserId(Long userId) {
+    public int deleteByUserId(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return refreshTokenRepository.deleteByUser(user);

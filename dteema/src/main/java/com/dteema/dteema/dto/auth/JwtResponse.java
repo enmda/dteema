@@ -4,6 +4,7 @@ import com.dteema.dteema.model.Role;
 import lombok.*;
 
 import java.util.Set;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -18,7 +19,7 @@ public class JwtResponse {
     @Builder.Default
     private String type = "Bearer";
 
-    private Long id;
+    private UUID id;
     private String username;
     private String email;
     private Set<Role> roles;

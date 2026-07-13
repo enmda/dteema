@@ -1,6 +1,5 @@
 spring:
-    application:
-        name: dteema
-    profiles:
-    active:
-    - dev
+  application:
+    name: dteema
+  profiles:
+    active: dev

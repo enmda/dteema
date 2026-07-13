@@ -4,6 +4,7 @@ import com.dteema.dteema.dto.user.UserDTO;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -12,8 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 public class MessageDTO {
 
-    private Long id;
-    private Long roomId;
+    private UUID id;
     private UserDTO user;
     private String content;
     private Boolean isEdited;
