@@ -1,14 +1,11 @@
 package com.dteema.dteema.dto.mapper;
 
 import com.dteema.dteema.dto.message.MessageDTO;
-import com.dteema.dteema.model.Message;
+import com.dteema.dteema.model.chatting.Message;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface MessageMapper {
-    MessageMapper INSTANCE = Mappers.getMapper(MessageMapper.class);
 
     MessageDTO toDTO(Message message);
 

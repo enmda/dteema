@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.dteema.dteema.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.dteema.dteema.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/dteema.iml" filepath="$PROJECT_DIR$/.idea/dteema.iml" />
     </modules>
   </component>

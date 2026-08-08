@@ -1,6 +1,9 @@
 package com.dteema.dteema.model;
 
 
+import com.dteema.dteema.model.chatting.Message;
+import com.dteema.dteema.model.chatting.Session;
+import com.dteema.dteema.model.chatting.SessionParticipant;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
