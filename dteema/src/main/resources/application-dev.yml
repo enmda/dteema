@@ -4,9 +4,9 @@ spring:
   
   # Database Configuration
   datasource:
-    url: jdbc:postgresql://localhost:5432/chatdb
-    username: chatuser
-    password: chatpass
+    url: jdbc:postgresql://localhost:5432/dteema_db
+    username: dteema_user
+    password: dteema_pass
     driver-class-name: org.postgresql.Driver
   
   # JPA Configuration
@@ -21,7 +21,7 @@ spring:
   
   # Liquibase Configuration ✅
   liquibase:
-    change-log: classpath:db/changelog/db.changelog-master.yaml
+    change-log: classpath:db/changelog/db.changelog-master.xml
     enabled: true
     drop-first: true  # Set to true ONLY in dev if you want fresh DB on each start
     default-schema: public

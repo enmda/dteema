@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="1-create-users" author="enmda">
+        <createTable tableName="users">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" primaryKeyName="pk_users" nullable="false"/>
+            </column>
+            <column name="username" type="VARCHAR(255)"/>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="password" type="VARCHAR(255)"/>
+            <column name="enabled" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP"/>
+            <column name="updated_at" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2-create-user-roles" author="enmda">
+        <createTable tableName="user_roles">
+            <column name="user_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" type="VARCHAR(255)"/>
+        </createTable>
+
+        <addForeignKeyConstraint
+            baseTableName="user_roles"
+            baseColumnNames="user_id"
+            constraintName="fk_user_roles_user"
+            referencedTableName="users"
+            referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="3-create-refresh-tokens" author="enmda">
+        <createTable tableName="refresh_tokens">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="pk_refresh_tokens" nullable="false"/>
+            </column>
+            <column name="user_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="token" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uk_refresh_tokens_token"/>
+            </column>
+            <column name="expiry_date" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="device_info" type="VARCHAR(255)"/>
+            <column name="ip_address" type="VARCHAR(45)"/>
+        </createTable>
+
+        <addForeignKeyConstraint
+            baseTableName="refresh_tokens"
+            baseColumnNames="user_id"
+            constraintName="fk_refresh_tokens_user"
+            referencedTableName="users"
+            referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="4-create-sessions" author="enmda">
+        <createTable tableName="sessions">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" primaryKeyName="pk_sessions" nullable="false"/>
+            </column>
+            <column name="created_by_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP"/>
+        </createTable>
+
+        <addForeignKeyConstraint
+            baseTableName="sessions"
+            baseColumnNames="created_by_id"
+            constraintName="fk_sessions_created_by"
+            referencedTableName="users"
+            referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="5-create-session-participants" author="enmda">
+        <createTable tableName="session_participants">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" primaryKeyName="pk_session_participants" nullable="false"/>
+            </column>
+            <column name="session_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="joined_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+            tableName="session_participants"
+            columnNames="session_id, user_id"
+            constraintName="uk_session_participants_session_user"/>
+
+        <addForeignKeyConstraint
+            baseTableName="session_participants"
+            baseColumnNames="session_id"
+            constraintName="fk_session_participants_session"
+            referencedTableName="sessions"
+            referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint
+            baseTableName="session_participants"
+            baseColumnNames="user_id"
+            constraintName="fk_session_participants_user"
+            referencedTableName="users"
+            referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="6-create-messages" author="enmda">
+        <createTable tableName="messages">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" primaryKeyName="pk_messages" nullable="false"/>
+            </column>
+            <column name="session_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sender_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="content" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+            baseTableName="messages"
+            baseColumnNames="session_id"
+            constraintName="fk_messages_session"
+            referencedTableName="sessions"
+            referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint
+            baseTableName="messages"
+            baseColumnNames="sender_id"
+            constraintName="fk_messages_sender"
+            referencedTableName="users"
+            referencedColumnNames="id"/>
+
+        <createIndex tableName="messages" indexName="idx_messages_session_created_at">
+            <column name="session_id"/>
+            <column name="created_at"/>
+        </createIndex>
+
+        <createIndex tableName="messages" indexName="idx_messages_sender_id">
+            <column name="sender_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="7-create-social-media-posts" author="enmda">
+        <createTable tableName="social_media_posts">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" primaryKeyName="pk_social_media_posts" nullable="false"/>
+            </column>
+            <column name="author_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="content" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP"/>
+        </createTable>
+
+        <addForeignKeyConstraint
+            baseTableName="social_media_posts"
+            baseColumnNames="author_id"
+            constraintName="fk_social_media_posts_author"
+            referencedTableName="users"
+            referencedColumnNames="id"/>
+
+        <createIndex tableName="social_media_posts" indexName="idx_social_media_posts_created_at">
+            <column name="created_at"/>
+        </createIndex>
+
+        <createIndex tableName="social_media_posts" indexName="idx_social_media_posts_author_id">
+            <column name="author_id"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>
