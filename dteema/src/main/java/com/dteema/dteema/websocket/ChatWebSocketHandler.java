@@ -5,7 +5,6 @@ import com.dteema.dteema.dto.chat.ChatMessageResponse;
 import com.dteema.dteema.dto.chat.WebSocketErrorResponse;
 import com.dteema.dteema.model.User;
 import com.dteema.dteema.service.ChatService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +13,8 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.net.URI;
@@ -59,7 +60,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         ChatMessageRequest request;
         try {
             request = objectMapper.readValue(textMessage.getPayload(), ChatMessageRequest.class);
-        } catch (IOException ex) {
+        } catch (JacksonException ex) {
             sendError(webSocketSession, "Invalid message payload");
             return;
         }
@@ -97,7 +98,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         }
     }
 
-    private void broadcast(UUID chatSessionId, ChatMessageResponse response) throws IOException {
+    private void broadcast(UUID chatSessionId, ChatMessageResponse response) throws IOException, JacksonException {
         TextMessage message = new TextMessage(objectMapper.writeValueAsString(response));
         Set<WebSocketSession> chatSessions = sessionsByChat.getOrDefault(chatSessionId, Set.of());
         for (WebSocketSession chatSession : chatSessions) {
@@ -107,7 +108,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         }
     }
 
-    private void sendError(WebSocketSession webSocketSession, String message) throws IOException {
+    private void sendError(WebSocketSession webSocketSession, String message) throws IOException, JacksonException {
         if (!webSocketSession.isOpen()) {
             return;
         }
