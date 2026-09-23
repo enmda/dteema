@@ -25,9 +25,9 @@ public class AuthController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public JwtResponse register(@Valid @RequestBody RegisterRequest request,
+    public void register(@Valid @RequestBody RegisterRequest request,
                                 HttpServletRequest httpRequest) {
-        return authService.register(request, deviceInfo(httpRequest), ipAddress(httpRequest));
+        authService.register(request, deviceInfo(httpRequest), ipAddress(httpRequest));
     }
 
     @PostMapping("/login")

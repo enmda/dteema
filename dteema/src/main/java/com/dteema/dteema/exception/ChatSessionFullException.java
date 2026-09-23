@@ -3,10 +3,9 @@ package com.dteema.dteema.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.CONFLICT)
-public class ChatSessionFullException extends RuntimeException {
+public class ChatSessionFullException extends GlobalException {
 
     public ChatSessionFullException(String message) {
-        super(message);
+        super(HttpStatus.CONFLICT, message);
     }
 }

@@ -33,7 +33,7 @@ public class AuthService {
     private final RefreshTokenService refreshTokenService;
 
     @Transactional
-    public JwtResponse register(RegisterRequest request, String deviceInfo, String ipAddress) {
+    public void register(RegisterRequest request, String deviceInfo, String ipAddress) {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Username is already taken");
         }
@@ -49,14 +49,8 @@ public class AuthService {
                 .enabled(true)
                 .build();
 
-        User savedUser = userRepository.save(user);
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(
-                savedUser.getId(),
-                deviceInfo,
-                ipAddress
-        );
+        userRepository.save(user);
 
-        return toJwtResponse(savedUser, refreshToken.getToken());
     }
 
     @Transactional

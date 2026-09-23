@@ -1,8 +1,10 @@
 package com.dteema.dteema.exception;
 
-public class RefreshTokenException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class RefreshTokenException extends GlobalException {
 
     public RefreshTokenException(String message) {
-        super(message);
+        super(HttpStatus.UNAUTHORIZED, message);
     }
 }
