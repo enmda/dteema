@@ -12,6 +12,9 @@ import com.dteema.dteema.model.User;
 import com.dteema.dteema.repository.UserRepository;
 import com.dteema.dteema.security.JwtService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,8 +27,8 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
-
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -48,7 +51,7 @@ public class AuthService {
                 .roles(Set.of(Role.ROLE_USER))
                 .enabled(true)
                 .build();
-
+        log.info("User created: Device info:{}\nIp address:{}",deviceInfo,ipAddress);
         userRepository.save(user);
 
     }
